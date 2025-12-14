@@ -1034,5 +1034,361 @@
   }
 </script>
 
+<!-- Gandhamardan Agri Products Chatbot -->
+<style>
+/* Chatbot Widget Styles */
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.chatbot-toggle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3a7d44 0%, #2D5016 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
+.chatbot-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.chatbot-window {
+  width: 350px;
+  height: 450px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.chatbot-window.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.chatbot-header {
+  background: linear-gradient(135deg, #3a7d44 0%, #2D5016 100%);
+  color: white;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatbot-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chatbot-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f9f9f9;
+}
+
+.message {
+  margin-bottom: 15px;
+  max-width: 80%;
+}
+
+.bot-message {
+  text-align: left;
+}
+
+.user-message {
+  text-align: right;
+  margin-left: auto;
+}
+
+.message-content {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 18px;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.bot-message .message-content {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-bottom-left-radius: 4px;
+}
+
+.user-message .message-content {
+  background: #3a7d44;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.typing-indicator {
+  display: none;
+  padding: 10px 15px;
+  color: #666;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+.typing-indicator.active {
+  display: block;
+}
+
+.chatbot-input-area {
+  padding: 15px;
+  background: white;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 10px;
+}
+
+.chatbot-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 0.9em;
+  outline: none;
+}
+
+.chatbot-input:focus {
+  border-color: #3a7d44;
+}
+
+.chatbot-send {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3a7d44;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .chatbot-window {
+    width: calc(100vw - 40px);
+    height: 50vh;
+    bottom: 80px;
+  }
+  
+  .chatbot-toggle {
+    width: 55px;
+    height: 55px;
+  }
+}
+</style>
+
+<div class="chatbot-container">
+  <button class="chatbot-toggle" id="chatbotToggle" title="Chat with Gandhamardan Agri Products Assistant">
+    💬
+  </button>
+  
+  <div class="chatbot-window" id="chatbotWindow">
+    <div class="chatbot-header">
+      <h3><span>🌾</span> Gandhamardan Assistant</h3>
+      <button class="chatbot-close" id="chatbotClose">×</button>
+    </div>
+    
+    <div class="chatbot-messages" id="chatbotMessages">
+      <div class="message bot-message">
+        <div class="message-content">
+          Hello! I'm the Gandhamardan Agri Products virtual assistant. How can I help you today? You can ask me about our products, services, or anything else related to our organic offerings.
+        </div>
+      </div>
+    </div>
+    
+    <div class="typing-indicator" id="typingIndicator">
+      Assistant is typing...
+    </div>
+    
+    <div class="chatbot-input-area">
+      <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your message here...">
+      <button class="chatbot-send" id="chatbotSend">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Gandhamardan Agri Products Chatbot Implementation
+document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
+  const chatbotToggle = document.getElementById('chatbotToggle');
+  const chatbotWindow = document.getElementById('chatbotWindow');
+  const chatbotClose = document.getElementById('chatbotClose');
+  const chatbotMessages = document.getElementById('chatbotMessages');
+  const chatbotInput = document.getElementById('chatbotInput');
+  const chatbotSend = document.getElementById('chatbotSend');
+  const typingIndicator = document.getElementById('typingIndicator');
+  
+  // Toggle chatbot visibility
+  chatbotToggle.addEventListener('click', function() {
+    chatbotWindow.classList.toggle('active');
+  });
+  
+  // Close chatbot
+  chatbotClose.addEventListener('click', function() {
+    chatbotWindow.classList.remove('active');
+  });
+  
+  // Send message on button click
+  chatbotSend.addEventListener('click', sendMessage);
+  
+  // Send message on Enter key
+  chatbotInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+  
+  // Function to add a message to the chat
+  function addMessage(content, isUser = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+    
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+    messageContent.textContent = content;
+    
+    messageDiv.appendChild(messageContent);
+    chatbotMessages.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  }
+  
+  // Function to simulate typing indicator
+  function showTyping() {
+    typingIndicator.classList.add('active');
+  }
+  
+  function hideTyping() {
+    typingIndicator.classList.remove('active');
+  }
+  
+  // Function to get bot response based on user input
+  function getBotResponse(userMessage) {
+    const message = userMessage.toLowerCase().trim();
+    
+    // Greetings
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+      return 'Hello! I\'m the Gandhamardan Agri Products virtual assistant. How can I help you today? You can ask me about our products, services, or anything else related to our organic offerings.';
+    }
+    
+    // Pricing inquiries - must redirect to Contact Us
+    if (message.includes('price') || message.includes('cost') || message.includes('how much') || message.includes('pricing') || message.includes('buy') || message.includes('purchase')) {
+      return 'Pricing and commercial details are handled directly by our team. Please use the Contact Us section to connect with the appropriate representative.';
+    }
+    
+    // Rice products
+    if (message.includes('rice') || message.includes('paddy') || message.includes('black rice') || message.includes('red rice') || message.includes('white rice')) {
+      return 'We offer a variety of organic rice products including Black Rice (Jasmine, Kalabhat, Kalamailful, Labanya), Indigenous Aromatic Rice (Gitanali, Badshah Bhog, Sugandha), and White Premium Sairam Paddy. These are available in Seeds, Rice, Flour, and Cookie forms. For specific pricing or bulk orders, please contact us through the Contact Us section.';
+    }
+    
+    // Millet products
+    if (message.includes('millet') || message.includes('snack') || message.includes('namkeen') || message.includes('murukku') || message.includes('cookies')) {
+      return 'Our millet products include packaged millet snacks, wholesale millet snacks, namkeen, mixture, bhujia, murukku, and ready-to-eat cookies. We also offer dehydrated vegetables like spine gourd slices. These are gluten-free, nutritious, and traditionally processed. For pricing information, please contact us through the Contact Us section.';
+    }
+    
+    // NutriBloom products
+    if (message.includes('nutribloom') || message.includes('protein') || message.includes('supplement') || message.includes('nutrition')) {
+      return 'NutriBloom is our nutrition product line featuring Super Protein Powder and other natural nutrition supplements rich in antioxidants. These products are designed for health-conscious consumers seeking high-protein, naturally sourced nutrition. For pricing details, please visit the Contact Us section.';
+    }
+    
+    // Herbal products
+    if (message.includes('herb') || message.includes('ashwagandha') || message.includes('triphala') || message.includes('amla') || message.includes('brahmi') || message.includes('churna') || message.includes('oil')) {
+      return 'We offer 48+ traditional Ayurvedic herbs available in raw and powder form. Examples include Ashwagandha, Triphala, Amla, Brahmi, Guduchi, and Mulethi. We also have herbal oils, churnas, face packs, and wellness formulations. All herbs are sourced from authentic medicinal origins and processed using traditional methods. For commercial inquiries, please contact us through the Contact Us section.';
+    }
+    
+    // General product inquiry
+    if (message.includes('product') || message.includes('what do you sell') || message.includes('offer') || message.includes('items')) {
+      return 'Gandhamardan Agri Products specializes in organic, traditionally cultivated agricultural products including: 1) Rice & Paddy Products (Black, Red, White rice varieties), 2) Millet Products (packaged snacks, namkeen, murukku), 3) NutriBloom Nutrition Products (Super Protein Powder), and 4) Raw Herbs & Herbal Powders (48+ Ayurvedic herbs). All our products are 100% organic certified with full traceability. For pricing, please use the Contact Us section.';
+    }
+    
+    // Quality and certifications
+    if (message.includes('organic') || message.includes('certified') || message.includes('quality') || message.includes('export') || message.includes('certification')) {
+      return 'All our products are 100% organic certified with full traceability. We maintain indigenous and traditional crop varieties, practice ethical farming and farmer empowerment, and meet export-grade quality standards for international markets.';
+    }
+    
+    // About company
+    if (message.includes('about') || message.includes('company') || message.includes('who are you')) {
+      return 'Gandhamardan Agri Products is an organic agriculture and agri-processing enterprise specializing in traditionally cultivated agricultural products. We focus on sustainability, traditional processing methods, and maintaining the highest organic and export-quality standards.';
+    }
+    
+    // Contact information
+    if (message.includes('contact') || message.includes('phone') || message.includes('email') || message.includes('address')) {
+      return 'For pricing, bulk orders, wholesale supply, export enquiries, or dealership discussions, please use the Contact Us section of our website. Our team will be happy to assist you with commercial inquiries.';
+    }
+    
+    // Default response
+    return 'Thank you for your inquiry! I\'m here to help with information about our organic products, including rice varieties, millet snacks, NutriBloom nutrition products, and our extensive range of traditional herbs. For pricing and commercial details, please use the Contact Us section of our website.';
+  }
+  
+  // Function to send message
+  function sendMessage() {
+    const message = chatbotInput.value.trim();
+    if (!message) return;
+    
+    // Add user message
+    addMessage(message, true);
+    chatbotInput.value = '';
+    
+    // Show typing indicator
+    showTyping();
+    
+    // Simulate bot thinking time
+    setTimeout(() => {
+      hideTyping();
+      
+      // Get and add bot response
+      const response = getBotResponse(message);
+      addMessage(response, false);
+    }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+  }
+});
+</script>
+
 </body>
 </html>

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gandhamardan Agri Products - Chatbot</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3a7d44 0%, #2D5016 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        
+        .chat-container {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #fafafa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .bot-message {
+            background-color: #e8f5e9;
+            border-bottom-left-radius: 0;
+            align-self: flex-start;
+        }
+        
+        .user-message {
+            background-color: #d1ecf1;
+            border-bottom-right-radius: 0;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        #send-button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background-color: #3a7d44;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        #send-button:hover {
+            background-color: #2D5016;
+        }
+        
+        .info-panel {
+            padding: 20px;
+            background-color: #fff8e1;
+            border-top: 1px solid #eee;
+        }
+        
+        .info-panel h3 {
+            margin-top: 0;
+            color: #3a7d44;
+        }
+        
+        .info-panel ul {
+            padding-left: 20px;
+        }
+        
+        .info-panel li {
+            margin-bottom: 8px;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background-color: #e8f5e9;
+            border-radius: 10px;
+            max-width: 80%;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 Gandhamardan Agri Products Chatbot</h1>
+            <p>Your virtual assistant for organic agriculture products</p>
+        </div>
+        
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-message">
+                    <h3>Welcome to Gandhamardan Agri Products!</h3>
+                    <p>I'm your virtual assistant. Ask me about our products, services, or traditional farming practices.</p>
+                </div>
+                <div class="message bot-message">
+                    Hello! I'm the official virtual assistant for Gandhamardan Agri Products. I specialize in providing information about our organic rice varieties, millet products, NutriBloom nutrition products, and traditional herbs. How can I assist you today?
+                </div>
+                <div class="message bot-message">
+                    <strong>Important:</strong> For pricing information, bulk orders, or commercial inquiries, please use the "Contact Us" section of our website. I can provide product details but cannot share pricing information directly.
+                </div>
+            </div>
+            <div class="typing-indicator" id="typing-indicator">
+                Assistant is typing...
+            </div>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>About Our Products</h3>
+            <ul>
+                <li><strong>Rice & Paddy:</strong> Organic Black, Red, and White rice varieties</li>
+                <li><strong>Millet Products:</strong> Packaged snacks, namkeen, murukku</li>
+                <li><strong>NutriBloom:</strong> Super protein powders and nutrition supplements</li>
+                <li><strong>Herbal Products:</strong> 48+ traditional Ayurvedic herbs in raw and powder form</li>
+            </ul>
+            <p><em>For pricing and commercial details, please contact us directly through our website.</em></p>
+        </div>
+    </div>
+
+    <script>
+        // Product database with information
+        const productInfo = {
+            // Rice & Paddy Products
+            rice: {
+                description: "We offer various organic rice varieties including Black, Red, and White rice. Our black rice types include Jasmine, Kalabhat, Kalamailful, and Labanya. We also have indigenous aromatic rice varieties like Gitanali, Badshah Bhog, and Sugandha, plus premium Sairam Paddy in seeds, rice, flour, and cookie forms.",
+                details: [
+                    "100% organic certified products",
+                    "Traditional cultivation methods",
+                    "Available in multiple forms (seeds, rice, flour, cookies)"
+                ]
+            },
+            blackrice: {
+                description: "Our organic black rice varieties include Jasmine, Kalabhat, Kalamailful, and Labanya. These are nutrient-rich and traditionally cultivated with sustainable farming practices.",
+                details: [
+                    "High antioxidant content",
+                    "Nutrient-dense compared to regular rice",
+                    "Traditionally cultivated using sustainable methods"
+                ]
+            },
+            redrice: {
+                description: "Organic red rice varieties with rich nutritional profiles, grown using traditional farming methods.",
+                details: [
+                    "Rich in fiber and nutrients",
+                    "Lower glycemic index than white rice",
+                    "Retains more nutrients due to minimal processing"
+                ]
+            },
+            whiterice: {
+                description: "Premium white rice varieties including indigenous aromatic types like Gitanali, Badshah Bhog, and Sugandha, as well as premium Sairam Paddy.",
+                details: [
+                    "Indigenous aromatic varieties",
+                    "Premium quality grains",
+                    "Traditionally processed for best taste"
+                ]
+            },
+            
+            // Millet Products
+            millet: {
+                description: "Our millet products include packaged snacks, wholesale snacks, namkeen, mixture, bhujia, murukku, and ready-to-eat cookies. These are gluten-free, nutritious, and traditionally processed.",
+                details: [
+                    "Gluten-free options available",
+                    "Nutritious and healthy alternatives",
+                    "Traditionally processed for authenticity"
+                ]
+            },
+            snack: {
+                description: "We offer a variety of packaged millet snacks that are both delicious and nutritious. These include namkeen, mixture, bhujia, murukku, and ready-to-eat cookies.",
+                details: [
+                    "Healthy snacking options",
+                    "Made with traditional ingredients",
+                    "Suitable for all ages"
+                ]
+            },
+            
+            // NutriBloom Products
+            nutribloom: {
+                description: "NutriBloom is our nutrition product line featuring super protein powder and natural nutrition supplements rich in antioxidants, designed for health-conscious consumers with high protein content from natural sources.",
+                details: [
+                    "High protein content",
+                    "Naturally sourced ingredients",
+                    "Rich in antioxidants",
+                    "Designed for health-conscious consumers"
+                ]
+            },
+            protein: {
+                description: "Our super protein powder is part of the NutriBloom line, offering natural nutrition supplements with high protein content from natural sources.",
+                details: [
+                    "Plant-based protein sources",
+                    "Easy to digest",
+                    "Rich in essential amino acids"
+                ]
+            },
+            
+            // Raw Herbs & Herbal Powders
+            herbs: {
+                description: "We offer 48+ traditional Ayurvedic herbs available in raw and powder form, sourced from authentic medicinal origins and processed using traditional methods. These are used for wellness, immunity, digestion, and general health support.",
+                details: [
+                    "48+ traditional Ayurvedic herbs",
+                    "Available in raw and powder form",
+                    "Authentic medicinal origins",
+                    "Traditional processing methods"
+                ]
+            },
+            ashwagandha: {
+                description: "Ashwagandha is one of our traditional Ayurvedic herbs available in raw and powder form. It's known for its adaptogenic properties and is used for wellness, stress management, and vitality.",
+                details: [
+                    "Adaptogenic herb for stress management",
+                    "Supports vitality and energy",
+                    "Traditionally used for overall wellness"
+                ]
+            },
+            triphala: {
+                description: "Triphala is a traditional Ayurvedic formulation made from three fruits. It's known for digestive support and detoxification properties.",
+                details: [
+                    "Traditional digestive support formula",
+                    "Contains three beneficial fruits",
+                    "Used for detoxification"
+                ]
+            },
+            amla: {
+                description: "Amla (Indian Gooseberry) is one of our traditional herbs rich in vitamin C and antioxidants, known for supporting immunity and overall health.",
+                details: [
+                    "Rich source of vitamin C",
+                    "High antioxidant content",
+                    "Supports immune system"
+                ]
+            },
+            brahmi: {
+                description: "Brahmi is a traditional herb known for cognitive support and mental clarity, commonly used in Ayurvedic preparations.",
+                details: [
+                    "Cognitive support herb",
+                    "Promotes mental clarity",
+                    "Traditional Ayurvedic use"
+                ]
+            },
+            guduchi: {
+                description: "Guduchi (Tinospora Cordifolia) is a traditional herb known for immune support and rejuvenation properties in Ayurveda.",
+                details: [
+                    "Immune system support",
+                    "Rejuvenating properties",
+                    "Traditional Ayurvedic herb"
+                ]
+            },
+            mulethi: {
+                description: "Mulethi (Licorice) is a traditional herb known for its soothing properties and support for respiratory and digestive health.",
+                details: [
+                    "Soothing properties",
+                    "Respiratory health support",
+                    "Digestive health benefits"
+                ]
+            },
+            
+            // General company info
+            company: {
+                description: "Gandhamardan Agri Products specializes in organic, traditionally cultivated agricultural products, including grains, millets, herbs, superfoods, and value-added food items. All products are grown sustainably, processed using traditional methods, and comply with organic and export-quality standards.",
+                details: [
+                    "100% organic certified products with full traceability",
+                    "Indigenous and traditional crop varieties",
+                    "Ethical farming and farmer empowerment",
+                    "Export-grade quality meeting international standards"
+                ]
+            },
+            
+            // Pricing policy
+            pricing: {
+                description: "Pricing and commercial details are handled directly by our team. Please use the Contact Us section to connect with the appropriate representative.",
+                details: [
+                    "No pricing information available online",
+                    "Direct contact required for quotes",
+                    "Personalized service for commercial inquiries"
+                ]
+            },
+            
+            // Contact info
+            contact: {
+                description: "For pricing, bulk orders, wholesale supply, export enquiries, or dealership discussions, please use the Contact Us section of our website.",
+                details: [
+                    "Use Contact Us section for pricing",
+                    "Bulk and wholesale orders welcome",
+                    "Export enquiries accepted",
+                    "Dealership opportunities available"
+                ]
+            }
+        };
+
+        // Get DOM elements
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Function to add a message to the chat
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to get bot response based on user input
+        function getBotResponse(userMessage) {
+            // Convert to lowercase for easier matching
+            const msg = userMessage.toLowerCase();
+            
+            // Check for specific product mentions
+            if (msg.includes('rice') || msg.includes('paddy')) {
+                if (msg.includes('black')) {
+                    return `Regarding our organic black rice: ${productInfo.blackrice.description} Key features include: ${productInfo.blackrice.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('red')) {
+                    return `Regarding our organic red rice: ${productInfo.redrice.description} Key features include: ${productInfo.redrice.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('white')) {
+                    return `Regarding our organic white rice: ${productInfo.whiterice.description} Key features include: ${productInfo.whiterice.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else {
+                    return `Regarding our rice and paddy products: ${productInfo.rice.description} Key features include: ${productInfo.rice.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                }
+            }
+            
+            if (msg.includes('millet') || msg.includes('snack')) {
+                if (msg.includes('snack')) {
+                    return `Regarding our millet snacks: ${productInfo.snack.description} Key features include: ${productInfo.snack.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else {
+                    return `Regarding our millet products: ${productInfo.millet.description} Key features include: ${productInfo.millet.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                }
+            }
+            
+            if (msg.includes('nutribloom') || msg.includes('protein')) {
+                if (msg.includes('protein')) {
+                    return `Regarding our super protein powder: ${productInfo.protein.description} Key features include: ${productInfo.protein.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else {
+                    return `Regarding our NutriBloom products: ${productInfo.nutribloom.description} Key features include: ${productInfo.nutribloom.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                }
+            }
+            
+            if (msg.includes('herb') || msg.includes('ashwagandha') || msg.includes('triphala') || msg.includes('amla') || msg.includes('brahmi') || msg.includes('guduchi') || msg.includes('mulethi')) {
+                if (msg.includes('ashwagandha')) {
+                    return `Regarding Ashwagandha: ${productInfo.ashwagandha.description} Key features include: ${productInfo.ashwagandha.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('triphala')) {
+                    return `Regarding Triphala: ${productInfo.triphala.description} Key features include: ${productInfo.triphala.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('amla')) {
+                    return `Regarding Amla: ${productInfo.amla.description} Key features include: ${productInfo.amla.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('brahmi')) {
+                    return `Regarding Brahmi: ${productInfo.brahmi.description} Key features include: ${productInfo.brahmi.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('guduchi')) {
+                    return `Regarding Guduchi: ${productInfo.guduchi.description} Key features include: ${productInfo.guduchi.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else if (msg.includes('mulethi')) {
+                    return `Regarding Mulethi: ${productInfo.mulethi.description} Key features include: ${productInfo.mulethi.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                } else {
+                    return `Regarding our herbal products: ${productInfo.herbs.description} Key features include: ${productInfo.herbs.details.join(', ')}. For pricing information, please use our Contact Us section.`;
+                }
+            }
+            
+            // Check for pricing or commercial inquiries
+            if (msg.includes('price') || msg.includes('cost') || msg.includes('buy') || msg.includes('purchase') || msg.includes('order') || msg.includes('commercial') || msg.includes('bulk') || msg.includes('wholesale')) {
+                return `Pricing and commercial details are handled directly by our team. For product pricing, bulk orders, wholesale supply, export enquiries, or dealership discussions, please use the "Contact Us" section of our website. Our representatives will provide you with personalized service and accurate pricing information.`;
+            }
+            
+            // Check for company information
+            if (msg.includes('company') || msg.includes('about') || msg.includes('who are you') || msg.includes('what do you do')) {
+                return `Gandhamardan Agri Products specializes in organic, traditionally cultivated agricultural products. ${productInfo.company.description} Key differentiators include: ${productInfo.company.details.join(', ')}.`;
+            }
+            
+            // Check for contact information
+            if (msg.includes('contact') || msg.includes('email') || msg.includes('phone') || msg.includes('address')) {
+                return `For pricing, bulk orders, wholesale supply, export enquiries, dealership or partnership discussions, please use the "Contact Us" section of our website. Our team handles all commercial inquiries directly to provide personalized service. You can also reach out via WhatsApp at +91 97246 42956 or email at kulamanipd2012@gmail.com.`;
+            }
+            
+            // Default responses for common questions
+            if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+                return "Hello! I'm the official virtual assistant for Gandhamardan Agri Products. I can provide information about our organic rice varieties, millet products, NutriBloom nutrition products, and traditional herbs. How can I assist you today?";
+            }
+            
+            if (msg.includes('thank') || msg.includes('thanks')) {
+                return "You're welcome! Is there anything else I can help you with regarding our organic products?";
+            }
+            
+            if (msg.includes('help')) {
+                return "I can help you with information about our product categories: rice & paddy products, millet snacks, NutriBloom nutrition products, and traditional herbs. For pricing information, please use our Contact Us section.";
+            }
+            
+            // Default response if no specific match
+            return "Thank you for your inquiry. I can provide detailed information about our organic rice varieties, millet products, NutriBloom nutrition supplements, and traditional herbs. For pricing information, commercial inquiries, or bulk orders, please use the Contact Us section of our website. What specific product would you like to know more about?";
+        }
+
+        // Function to simulate bot typing
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+
+        // Function to handle sending a message
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+            
+            // Add user message
+            addMessage(message, true);
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate bot thinking/replying
+            setTimeout(() => {
+                hideTypingIndicator();
+                
+                // Get and add bot response
+                const response = getBotResponse(message);
+                addMessage(response, false);
+            }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Focus input field on load
+        userInput.focus();
+    </script>
+</body>
+</html>
